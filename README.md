@@ -1,4 +1,1 @@
-# memory-cleanup.bat
-Storage and memory cleanup for windows.
-
-Would update when i dont feel lazy anymore, the script is enough to walk you through the process.
+[![memclean](https://i.imgur.com/4VHDO9J.png "First screen")](https://i.imgur.com/4VHDO9J.png "First screen")
