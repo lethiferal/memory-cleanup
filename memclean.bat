@@ -16,7 +16,7 @@ echo ^|    ^| __      ^|  ^|  ^|   ---^|  ^|^|  -__^|  _  ^|     ^|  ^|  ^|  _  
 echo ^|    ^|^|  ^|     ^|  ^|  ^|______^|__^|^|_____^|___._^|__^|__^|_____^|   __^|    
 echo \____^|^|__^|_____^|__^|                                     ^|__^|   
 echo.
-echo Please close any active applications and press any key to start storage cleanup.
+echo Please close any active applications and press a key to start storage cleanup.
 echo.
 pause
 if exist "logs.txt" (
