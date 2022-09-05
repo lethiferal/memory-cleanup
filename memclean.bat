@@ -46,7 +46,7 @@ if exist "config.ini" (goto config_loader) else (goto config_create)
 :config_create
 	type nul > config.ini
 	echo tempfile=false >> config.ini
-	echo prefetch=false >> config.ini
+	echo services=false >> config.ini
 	echo  _________________    _______                                      
 	echo ^|# :           : #^|  ^|   ^|   ^|.-----.--------.-----.----.--.--.    
 	echo ^|  :           :  ^|  ^|       ^|^|  -__^|        ^|  _  ^|   _^|  ^|  ^|    
@@ -66,7 +66,7 @@ if exist "config.ini" (goto config_loader) else (goto config_create)
 :config_loader
 	for /f "tokens=1,2 delims==" %%a in (config.ini) do (
 		if %%a==tempfile set TF=%%b
-		if %%a==prefetch set PF=%%b
+		if %%a==services set ST=%%b
 	)
 	echo  _________________    _______                                      
 	echo ^|# :           : #^|  ^|   ^|   ^|.-----.--------.-----.----.--.--.    
@@ -81,7 +81,7 @@ if exist "config.ini" (goto config_loader) else (goto config_create)
 	echo.
 	echo Config file found, displaying settings loaded from a configuration file.
 	echo Tempfile Deletion : %TF%
-	echo Prefetch Deletion : %PF%
+	echo Service Terminate : %ST%
 	echo.
 	pause
 	cls
@@ -90,8 +90,8 @@ if exist "config.ini" (goto config_loader) else (goto config_create)
 if %TF%==true goto :TFP
 if %TF%==false goto :P1
 :P1
-if %PF%==true goto :PFP
-if %PF%==false goto :END
+if %ST%==true goto :STP
+if %ST%==false goto :END
 
 :TFP
 	cls
@@ -108,10 +108,23 @@ if %PF%==false goto :END
 	echo.
 	echo Cleaning (%temp%) in progress.
 	echo [%TIME%] - Attempting to erase: %temp% >> logs.txt
-	dir %temp% >> logs.txt
 	cd /D %temp%
 	for /d %%D in (*) do rd /s /q "%%D"
-	del /f /q *
+	del /f /q * >> %~dp0/logs.txt
+	cd %~dp0
+	echo Cleaning %windir%\prefetch in progress.
+	echo [%TIME%] - Attempting to erase: %windir%\prefetch >> logs.txt
+	del /f /s /q %windir%\prefetch\*.* >> logs.txt
+	echo Cleaning (%systemdrive%) in progress.
+	echo [%TIME%] - Attempting to clean: %systemdrive% >> logs.txt
+	if exist "%systemdrive%\recycled" (del /f /s /q %systemdrive%\recycled\*.*  >> logs.txt)
+	echo Cleaning (%userprofile%) in progress.
+	echo [%TIME%] - Attempting to clean: %userprofile% >> logs.txt
+	del /f /q %userprofile%\cookies\*.* >> logs.txt
+	del /f /q %userprofile%\recent\*.* >> logs.txt
+	del /f /s /q %userprofile%\Local Settings\Temporary Internet Files\*.* >> logs.txt
+	del /f /s /q %userprofile%\Local Settings\Temp\*.* >> logs.txt
+	del /f /s /q %userprofile%\recent\*.* >> logs.txt
 	cls
 	echo  _________________    _______                                      
 	echo ^|# :           : #^|  ^|   ^|   ^|.-----.--------.-----.----.--.--.    
@@ -124,11 +137,11 @@ if %PF%==false goto :END
 	echo ^|    ^|^|  ^|     ^|  ^|  ^|______^|__^|^|_____^|___._^|__^|__^|_____^|   __^|    
 	echo \____^|^|__^|_____^|__^|                                     ^|__^|   
 	echo.
-	echo Cleaned up %temp%.
+	echo Cleaned up Junk Files.
 	timeout /t 2 /nobreak > nul
 	pause
 	goto P1
-:PFP
+:STP
 	cls
 	echo  _________________    _______                                      
 	echo ^|# :           : #^|  ^|   ^|   ^|.-----.--------.-----.----.--.--.    
@@ -141,11 +154,35 @@ if %PF%==false goto :END
 	echo ^|    ^|^|  ^|     ^|  ^|  ^|______^|__^|^|_____^|___._^|__^|__^|_____^|   __^|    
 	echo \____^|^|__^|_____^|__^|                                     ^|__^|   
 	echo.
-	echo Cleaning %windir%\prefetch in progress.
-	cd %~dp0
-	echo [%TIME%] - Attempting to erase: %windir%\prefetch >> logs.txt
-	dir %windir%\prefetch\ >> logs.txt
-	del /f /s /q %windir%\prefetch\*.*
+	echo Stopping excess windows services.
+	echo [%TIME%] - Attempting to stop excess windows services. >> logs.txt
+	net stop gupdate >> logs.txt
+	net stop gupdatem >> logs.txt
+	net stop gusvc >> logs.txt
+	net stop LavasoftAdAwareService11 >> logs.txt
+	net stop SCardSvr >> logs.txt
+	net stop NAUpdate >> logs.txt
+	net stop AdobeARMservice >> logs.txt
+	net stop CscService >> logs.txt
+	net stop afcdpsrv >> logs.txt
+	net stop AcrSch2Svc >> logs.txt
+	net stop syncagentsrv >> logs.txt
+	net stop BDESVC >> logs.txt
+	net stop bthserv >> logs.txt
+	net stop AnyDesk >> logs.txt
+	net stop Browser >> logs.txt
+	net stop DPS >> logs.txt
+	net stop TrkWks >> logs.txt
+	net stop iphlpsvc >> logs.txt
+	net stop SharedAccess >> logs.txt
+	net stop PcaSvc >> logs.txt
+	net stop Spooler >> logs.txt
+	net stop WPCSvc >> logs.txt
+	net stop RemoteRegistry >> logs.txt
+	net stop seclogon >> logs.txt
+	net stop lmhosts >> logs.txt
+	net stop WerSvc >> logs.txt
+	net stop stisvc >> logs.txt
 	cls
 	echo  _________________    _______                                      
 	echo ^|# :           : #^|  ^|   ^|   ^|.-----.--------.-----.----.--.--.    
@@ -158,11 +195,10 @@ if %PF%==false goto :END
 	echo ^|    ^|^|  ^|     ^|  ^|  ^|______^|__^|^|_____^|___._^|__^|__^|_____^|   __^|    
 	echo \____^|^|__^|_____^|__^|                                     ^|__^|   
 	echo.
-	echo Cleaned up %windir%\prefetch.
+	echo Stopped excess windows services. 
 	timeout /t 2 /nobreak > nul
 	pause
 :END
 cd %~dp0
 echo [%TIME%] - Finished cleanup tasks.>> logs.txt 
 exit
-
